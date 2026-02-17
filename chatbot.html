@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: rgb(255, 166, 0);
+            --primary-dark: #8c97ca;
+            --secondary-color: #f72585;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --light-text: #f8f9fa;
+            --border-radius: 2px;
+            --box-shadow: 0 10px 30px rgba(147, 26, 26, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        
+        #chatbot-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: var(--transition);
+            animation: pulse 2s infinite;
+        }
+
+        #chatbot-button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        #chatbot-container {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            width: 380px;
+            max-height: 600px;
+            background-image: url('m1.jpeg');
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        #chatbot-container.active {
+            display: flex;
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Header */
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--light-text);
+            padding: 18px 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chatbot-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chatbot-title i {
+            font-size: 20px;
+        }
+
+        .chatbot-close {
+            cursor: pointer;
+            font-size: 22px;
+            transition: var(--transition);
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .chatbot-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Messages area */
+        .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--light-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Message bubbles */
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            word-wrap: break-word;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bot-message {
+            background: white;
+            color: var(--dark-text);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        .user-message {
+            background: var(--primary-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        /* Input area */
+        .chatbot-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+            align-items: center;
+        }
+
+        #chatbot-input-field {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        #chatbot-input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        #chatbot-send {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chatbot-send:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* Product cards */
+        .product-card {
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+
+        .product-title {
+            font-weight: 600;
+            margin: 5px 0;
+            color: var(--dark-text);
+        }
+
+        .product-price {
+            color: var(--secondary-color);
+            font-weight: 700;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .product-description {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .product-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-btn {
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .view-btn:hover {
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .cart-btn {
+            background: var(--primary-color);
+            color: white;
+            border: 1px solid var(--primary-color);
+        }
+
+        .cart-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 18px;
+            border: 1px solid #e9ecef;
+            align-self: flex-start;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #adb5bd;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            #chatbot-container {
+                width: 90%;
+                right: 5%;
+                bottom: 100px;
+                max-height: 70vh;
+            }
+            
+            #chatbot-button {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Chatbot button -->
+    <button id="chatbot-button">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Chatbot container -->
+    <div id="chatbot-container">
+        <div class="chatbot-header">
+            <div class="chatbot-title">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Shop Assistant</span>
+            </div>
+            <span class="chatbot-close">&times;</span>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbot-input-field" placeholder="Ask about products...">
+            <button id="chatbot-send">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatbotButton = document.getElementById('chatbot-button');
+            const chatbotContainer = document.getElementById('chatbot-container');
+            const chatbotClose = document.querySelector('.chatbot-close');
+            const chatbotMessages = document.getElementById('chatbot-messages');
+            const chatbotInput = document.getElementById('chatbot-input-field');
+            const chatbotSend = document.getElementById('chatbot-send');
+
+            // Enhanced product database with INR prices
+            const products = [
+                {
+                    id: 1,
+                    name: "Wireless Bluetooth Headphones",
+                    price: 7500,
+                    category: "electronics",
+                    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aGVhZHBob25lc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+                    description: "Premium wireless headphones with active noise cancellation and 30-hour battery life. Perfect for music lovers and travelers.",
+                    rating: 4.8
+                },
+                {
+                    id: 2,
+                    name: "Smart Fitness Watch",
+                    price: 10900,
+                    category: "electronics",
+                    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2F0Y2hlc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+                    description: "Track your fitness activities, heart rate, and sleep patterns with this advanced smartwatch. Water-resistant and compatible with iOS/Android.",
+                    rating: 4.6
+                },
+                {
+                    id: 3,
+                    name: "Organic Cotton T-Shirt",
+                    price: 2100,
+                    category: "clothing",
+                    image: "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHNoaXJ0fGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+                    description: "Comfortable and eco-friendly t-shirt made from 100% organic cotton. Available in multiple colors and sizes.",
+                    rating: 4.5
+                },
+                {
+                    id: 4,
+                    name: "Wireless Charging Pad",
+                    price: 3350,
+                    category: "electronics",
+                    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNoYXJnZXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
+                    description: "Fast wireless charging pad compatible with all Qi-enabled devices. Sleek design with non-slip surface.",
+                    rating: 4.4
+                },
+                {
+                    id: 5,
+                    name: "Denim Jeans",
+                    price: 4200,
+                    category: "clothing",
+                    image: "https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8amVhbnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
+                    description: "Classic fit denim jeans with stretch technology for maximum comfort. Available in multiple washes.",
+                    rating: 4.3
+                }
+            ];
+
+            
+            const intents = {
+                greeting: {
+                    patterns: ["hi", "hello", "hey", "good morning", "good afternoon"],
+                    responses: [
+                        "Hello! 👋 Welcome to our store. How can I assist you today?",
+                        "Hi there! 😊 What can I help you find?",
+                        "Welcome! 🛍️ Ready to find something amazing?"
+                    ]
+                },
+                goodbye: {
+                    patterns: ["bye", "goodbye", "see you", "exit", "quit"],
+                    responses: [
+                        "Goodbye! Happy shopping! Come back soon! 😊",
+                        "Thanks for visiting! Let me know if you need anything else. 👋",
+                        "Have a wonderful day! 🎉"
+                    ]
+                },
+                recommend: {
+                    patterns: ["recommend", "suggest", "what should I buy", "ideas", "popular"],
+                    responses: [
+                        "Here are some top picks you might love: 💖",
+                        "Based on what's trending, I recommend: 🔥",
+                        "Our customers are loving these products: ⭐⭐⭐⭐⭐"
+                    ],
+                    action: function() {
+                        return getRandomProducts(3);
+                    }
+                },
+                electronics: {
+                    patterns: ["electronics", "tech", "gadgets", "headphones", "smartwatch", "phone", "laptop"],
+                    responses: [
+                        "Our electronics collection has these great items: 📱💻",
+                        "Tech lovers enjoy these gadgets: ⚡",
+                        "Check out these electronic products: 🔌"
+                    ],
+                    action: function() {
+                        return getProductsByCategory("electronics");
+                    }
+                },
+                clothing: {
+                    patterns: ["clothing", "shirt", "dress", "fashion", "apparel", "jeans", "t-shirt"],
+                    responses: [
+                        "Our fashion collection includes these stylish items: 👕👖",
+                        "Here are some clothing options you might like: 👗",
+                        "Check out these apparel choices: 👚"
+                    ],
+                    action: function() {
+                        return getProductsByCategory("clothing");
+                    }
+                },
+                help: {
+                    patterns: ["help", "support", "assistance", "what can you do"],
+                    responses: [
+                        "I can help you: 🔍 Find products, ⭐ Make recommendations, ❓ Answer questions",
+                        "I'm your shopping assistant! I can recommend products, show categories, and help you find what you need.",
+                        "You can ask me about: Products, Categories, Recommendations, or anything else!"
+                    ]
+                },
+                thanks: {
+                    patterns: ["thanks", "thank you", "appreciate"],
+                    responses: [
+                        "You're welcome! 😊 Happy to help!",
+                        "Anytime! Let me know if you need anything else. 💖",
+                        "My pleasure! Happy shopping! 🛍️"
+                    ]
+                },
+                default: {
+                    responses: [
+                        "I'm not sure I understand. Could you try rephrasing? 🤔",
+                        "I'm still learning! Try asking about products or categories. 😊",
+                        "I didn't catch that. You can ask me about: Products, Recommendations, or Help. 💡"
+                    ]
+                }
+            };
+
+            // Helper functions
+            function getRandomProducts(count) {
+                const shuffled = [...products].sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, count);
+            }
+
+            function getProductsByCategory(category) {
+                return products.filter(product => product.category === category);
+            }
+
+            function createProductCard(product) {
+                // Format price with Indian numbering system
+                const formattedPrice = new Intl.NumberFormat('en-IN', {
+                    style: 'currency',
+                    currency: 'INR',
+                    maximumFractionDigits: 0
+                }).format(product.price);
+                
+                return `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-price">${formattedPrice} <span style="color: #6c757d; font-size: 14px;">⭐ ${product.rating}/5</span></div>
+                        <div class="product-description">${product.description}</div>
+                        <div class="product-actions">
+                            <div class="product-btn view-btn">View Details</div>
+                            <div class="product-btn cart-btn">Add to Cart</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.classList.add('typing-indicator');
+                typingDiv.id = 'typing-indicator';
+                typingDiv.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                chatbotMessages.appendChild(typingDiv);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                return typingDiv;
+            }
+
+            function addMessage(text, isUser = false) {
+                // Remove typing indicator if present
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+                messageDiv.innerHTML = text;
+                chatbotMessages.appendChild(messageDiv);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+
+            function processUserInput(input) {
+                input = input.toLowerCase().trim();
+                
+                // Check for matching intent
+                let matchedIntent = null;
+                
+                for (const [intentName, intentData] of Object.entries(intents)) {
+                    for (const pattern of intentData.patterns || []) {
+                        if (input.includes(pattern)) {
+                            matchedIntent = intentName;
+                            break;
+                        }
+                    }
+                    if (matchedIntent) break;
+                }
+
+                const intent = matchedIntent ? intents[matchedIntent] : intents.default;
+                const randomResponse = intent.responses[Math.floor(Math.random() * intent.responses.length)];
+                
+                // Show typing indicator before response
+                const typingIndicator = showTypingIndicator();
+                
+                setTimeout(() => {
+                    addMessage(randomResponse);
+                    
+                    // Execute action if exists
+                    if (intent.action) {
+                        const products = intent.action();
+                        if (products.length > 0) {
+                            setTimeout(() => {
+                                products.forEach(product => {
+                                    addMessage(createProductCard(product));
+                                });
+                            }, 300);
+                        } else {
+                            setTimeout(() => {
+                                addMessage("I couldn't find any products matching that criteria. Try another category or ask for recommendations!");
+                            }, 300);
+                        }
+                    }
+                }, 1000 + Math.random() * 1000); // Simulate "typing" delay
+            }
+
+            // Event listeners
+            chatbotButton.addEventListener('click', function() {
+                chatbotContainer.classList.toggle('active');
+                if (chatbotMessages.children.length === 0) {
+                    setTimeout(() => {
+                        addMessage("Hello! 👋 Welcome to our store. How can I assist you today?");
+                    }, 300);
+                }
+            });
+
+            chatbotClose.addEventListener('click', function() {
+                chatbotContainer.classList.remove('active');
+            });
+
+            chatbotSend.addEventListener('click', function() {
+                const message = chatbotInput.value.trim();
+                if (message) {
+                    addMessage(message, true);
+                    chatbotInput.value = '';
+                    setTimeout(() => {
+                        processUserInput(message);
+                    }, 500);
+                }
+            });
+
+            chatbotInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    chatbotSend.click();
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!chatbotContainer.contains(e.target) && e.target !== chatbotButton) {
+                    chatbotContainer.classList.remove('active');
+                }
+            });
+
+            // Add event delegation for product buttons
+            chatbotMessages.addEventListener('click', function(e) {
+                if (e.target.classList.contains('view-btn')) {
+                    const productCard = e.target.closest('.product-card');
+                    const productName = productCard.querySelector('.product-title').textContent;
+                    addMessage(`You clicked to view details for: ${productName}`, true);
+                    setTimeout(() => {
+                        addMessage(`Great choice! Let me show you more details about ${productName}...`);
+                    }, 800);
+                }
+                
+                if (e.target.classList.contains('cart-btn')) {
+                    const productCard = e.target.closest('.product-card');
+                    const productName = productCard.querySelector('.product-title').textContent;
+                    addMessage(`Added to cart: ${productName}`, true);
+                    setTimeout(() => {
+                        addMessage(`🎉 ${productName} has been added to your cart! Would you like to see more products or proceed to checkout?`);
+                    }, 800);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

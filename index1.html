@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Commerce Auth</title>
+  <style>
+    :root {
+      --primary: #222230;
+      --primary-dark: rgb(117, 94, 51);
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --border-radius: 0.3rem;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background-color: #f5f7fa;
+      color: var(--dark);
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .auth-container {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      max-width: 500px;
+      margin: 2rem auto;
+    }
+    
+    .auth-header {
+      background: var(--primary);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .auth-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .tab:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .tab.active {
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+    
+    .tab-content {
+      padding: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ced4da;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      transition: border-color 0.15s ease-in-out;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+    
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .message {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+    }
+    
+    .success {
+      background-color: rgba(76, 201, 240, 0.2);
+      color: #0a9396;
+      border-left: 4px solid var(--success);
+    }
+    
+    .error {
+      background-color: rgba(247, 37, 133, 0.2);
+      color: var(--danger);
+      border-left: 4px solid var(--danger);
+    }
+    
+    .profile {
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .profile h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    @media (max-width: 576px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .auth-container {
+        margin: 1rem auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="auth-container">
+      <div class="auth-header">
+        <h2>CLOUD BASED E-COMMERCE</h2>
+        <h2>RECOMMENDATION SYSTEM</h2>
+      </div>
+      
+      <div id="auth-section">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('login')">Login</div>
+          <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+        </div>
+        
+        <div id="login" class="tab-content">
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">Login</button>
+          </form>
+        </div>
+        
+        <div id="signup" class="tab-content hidden">
+          <form id="signupForm">
+            <div class="form-group">
+              <label for="signupUsername">Username</label>
+              <input type="text" id="signupUsername" required>
+            </div>
+            <div class="form-group">
+              <label for="signupEmail">Email</label>
+              <input type="email" id="signupEmail" required>
+            </div>
+            <div class="form-group">
+              <label for="signupPassword">Password</label>
+              <input type="password" id="signupPassword" required>
+            </div>
+            <button type="submit">Sign Up</button>
+          </form>
+        </div>
+      </div>
+      
+      <div id="profile" class="profile hidden">
+        <h2>Welcome, <span id="username"></span>!</h2>
+        <p>You are successfully authenticated.</p>
+        <button onclick="logout()">Logout</button>
+      </div>
+      
+      <div id="message" class="message hidden"></div>
+    </div>
+  </div>
+
+  <script>
+   
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const authSection = document.getElementById('auth-section');
+    const profileSection = document.getElementById('profile');
+    const messageDiv = document.getElementById('message');
+    const usernameSpan = document.getElementById('username');
+    
+   
+    document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    
+    
+    function switchTab(tabId) {
+   
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+      
+      
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+    
+    
+    function showMessage(type, text) {
+      messageDiv.className = `message ${type}`;
+      messageDiv.textContent = text;
+      messageDiv.classList.remove('hidden');
+      
+     
+      setTimeout(() => {
+        messageDiv.classList.add('hidden');
+      }, 5000);
+    }
+    
+   
+    function showProfile(user) {
+      authSection.classList.add('hidden');
+      profileSection.classList.remove('hidden');
+      usernameSpan.textContent = user.username;
+    }
+    
+  
+    function showAuthForms() {
+      authSection.classList.remove('hidden');
+      profileSection.classList.add('hidden');
+      loginForm.reset();
+      signupForm.reset();
+      switchTab('login');
+    }
+    
+    
+    async function checkAuthStatus() {
+      try {
+        const response = await fetch('/api/profile', {
+          credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showProfile(data.user);
+        } else {
+          showAuthForms();
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        showAuthForms();
+      }
+    }
+    
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('success', 'Login successful!');
+          showProfile(data.user);
+        } else {
+          showMessage('error', data.message || 'Login failed');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showMessage('error', 'An error occurred during login');
+      }
+    });
+    
+   
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('signupUsername').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ username, email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('success', 'Account created successfully!');
+          showProfile(data.user);
+        } else {
+          showMessage('error', data.message || 'Signup failed');
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        showMessage('error', 'An error occurred during signup');
+      }
+    });
+    
+
+    async function logout() {
+      try {
+        const response = await fetch('/api/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('success', 'Logged out successfully');
+          showAuthForms();
+        } else {
+          showMessage('error', data.message || 'Logout failed');
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        showMessage('error', 'An error occurred during logout');
+      }
+    }
+  </script>
+</body>
+</html>

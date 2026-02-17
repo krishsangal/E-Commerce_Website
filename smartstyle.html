@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Offers Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --warning: #fca311;
+            --danger: #e63946;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+        
+        .cache-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--success);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .cache-indicator i {
+            margin-right: 0.3rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .section-title i {
+            margin-right: 1rem;
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+        
+        .offer-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .offer-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .offer-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .offer-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .offer-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--danger);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .price-range {
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 0.5rem 0;
+        }
+        
+        .expiry {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .perk {
+            background: rgba(76, 201, 240, 0.1);
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .perk i {
+            color: var(--success);
+            margin-right: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .collapsible {
+            cursor: pointer;
+            padding: 1rem;
+            margin-top: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .collapsible:hover {
+            background: #e9ecef;
+        }
+        
+        .collapsible:after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            transition: transform 0.3s;
+        }
+        
+        .collapsible.active:after {
+            transform: rotate(180deg);
+        }
+        
+        .content {
+            padding: 0 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .feature-card {
+            background: rgba(76, 201, 240, 0.05);
+            border: 1px solid rgba(76, 201, 240, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            background: rgba(76, 201, 240, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .testimonial {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-top: 3px solid var(--accent);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .faq-item {
+            margin-bottom: 1rem;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .faq-answer {
+            padding-left: 1rem;
+            border-left: 2px solid var(--accent);
+        }
+        
+        @media (max-width: 768px) {
+            .offer-cards, .feature-grid, .testimonials {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .cache-indicator {
+                position: static;
+                margin-top: 1rem;
+                display: inline-flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class=""></i>Smart Offers Hub </h1>
+            <p class="subtitle">A Modern Add-on Page for Exclusive Clothing + Accessory Deals</p>
+            <div class="cache-indicator">
+                <i class="fas fa-bolt"></i> <span>Page Cached for Performance</span>
+            </div>
+        </header>
+        
+        <!-- Section 1: Personalized Clothing Discounts -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-tags"></i> Personalized Clothing Discounts </h2>
+            <div class="offer-cards">
+                <div class="offer-card">
+                    <div class="offer-badge">Limited Time</div>
+                    <h3>First-Time Buyer Special</h3>
+                    <div class="price-range">Price Range: ₹1999–₹5999</div>
+                    <div class="expiry">Offer expires: 30 days from first visit</div>
+                    <div class="perk">
+                        <i class="fas fa-gift"></i> <strong>Perk:</strong> Get <strong>1 Free Dry Cleaning</strong> (redeem within 8 months)
+                    </div>
+                    <button class="btn">Claim Offer</button>
+                </div>
+                
+                <div class="offer-card">
+                    <h3>Premium Wardrobe Care</h3>
+                    <div class="price-range">Price Range: ₹8499 and above</div>
+                    <div class="expiry">Offer valid until: AUG 31, 2025</div>
+                    <div class="perk">
+                        <i class="fas fa-gift"></i> <strong>Perk:</strong> Get <strong>2 Dry Cleanings/year</strong><br>
+                        <small>Total 8 drycleans, 3 being free  | Valid for 4 years</small>
+                    </div>
+                    <button class="btn">Claim Offer</button>
+                </div>
+                
+                <div class="offer-card">
+                    <div class="offer-badge">New</div>
+                    <h3>Seasonal Collection Discount</h3>
+                    <div class="price-range">Price Range: ₹6499–₹11999</div>
+                    <div class="expiry">Limited seasonal offer</div>
+                    <div class="perk">
+                        <i class="fas fa-gift"></i> <strong>Perk:</strong> Get <strong>15% Off</strong> on next purchase + Free Alterations
+                    </div>
+                    <button class="btn">Claim Offer</button>
+                </div>
+            </div>
+        </section>
+          <!-- Section 3: Accessories Bonus -->
+          <section class="section">
+            <h2 class="section-title"><i class="fas fa-clock"></i> Accessories Bonus</h2>
+            <div class="offer-card">
+                <h3>Watch & Clock Battery Program</h3>
+                <div class="perk">
+                    <i class="fas fa-battery-full"></i> <strong>With every Wrist Watch, Alarm Clock and Wall Clock Purchase:</strong><br><br>
+                    Get <strong>1 Complimentary Battery Cell</strong><br>
+                    Additional cells at discounted rate for 2 years
+                </div>
+                <button class="btn">View Battery Options</button>
+            </div>
+            
+            <div class="offer-card" style="margin-top: 1.5rem;">
+                <h3>Premium Leather Care Kit</h3>
+                <div class="perk">
+                    <i class="fas fa-spa"></i> <strong>With every leather accessory purchase:</strong><br><br>
+                    Get <strong>Free Leather Conditioner</strong> (50ml)<br>
+                    Special discount on full leather care kit
+                </div>
+                <button class="btn">Learn About Leather Care</button>
+            </div>
+        </section>
+        <!-- Section 2: Dry Cleaning Service Request -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-soap"></i> Dry Cleaning Service Request</h2>
+            <form id="dryCleaningForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Delivery Address</label>
+                    <textarea id="address" rows="3" required placeholder="Enter your complete address"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemCategory">Item Category</label>
+                    <select id="itemCategory" required>
+                        <option value="">Select category</option>
+                        <option value="suit">Suit/Blazer</option>
+                        <option value="dress">Dress</option>
+                        <option value="coat">Coat/Jacket</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pickupDate">Preferred Pickup Date</label>
+                    <input type="date" id="pickupDate" required>
+                </div>
+                
+                <button type="submit" class="btn">Schedule Pickup</button>
+            </form>
+            
+            <div class="collapsible">How it works?</div>
+            <div class="content">
+                <p>Our AI system will automatically check your order eligibility when you submit the form. You can track the status in your user dashboard. Eligible items will be processed within 24 hours.</p>
+            </div>
+        </section>
+
+        
+        
+        <!-- New Section: Customer Testimonials -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-comment-dots"></i> What Our Customers Say</h2>
+            <div class="testimonials">
+                <div class="testimonial">
+                    <div class="testimonial-text">
+                        "The AI recommendations were spot on! I got a perfect outfit combination I wouldn't have thought of myself."
+                    </div>
+                    <div class="testimonial-author">- SONU MANDAL, Delhi</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">
+                        "The dry cleaning service saved me so much time. They picked up and delivered right to my office."
+                    </div>
+                    <div class="testimonial-author">- PRATHAM, Patna</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">
+                        "The battery replacement program for my watch is incredibly convenient. No more hunting for watch batteries!"
+                    </div>
+                    <div class="testimonial-author">- Ganesh, Delhi</div>
+                </div>
+            </div>
+        </section>
+        
+       
+        <!-- New Section: Our Stats -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Our Impact</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">10,000+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24h</div>
+                    <div class="stat-label">Avg. Service Response</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4.9★</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 4: Smart Upsell Features -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-magic"></i> Smart Upsell Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                    <h3>Smart Recommendations</h3>
+                    <p>AI suggests items based on your interests & purchase history</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-box-open"></i></div>
+                    <h3>Bonus Combos</h3>
+                    <p>Curated bundles like T-shirt + Watch + Battery</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
+                    <h3>Free Exchange Pickup</h3>
+                    <p>Schedule a pickup directly if unsatisfied</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
+                    <h3>Maintenance Reminders</h3>
+                    <p>Get alerts when your items need cleaning or battery replacement</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- New Section: FAQ -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <div class="faq-question">How do I redeem my free dry cleaning service?</div>
+                <div class="faq-answer">
+                    Simply schedule a pickup through our form above or contact our customer service. Your eligibility will be automatically verified.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Can I combine multiple offers?</div>
+                <div class="faq-answer">
+                    Most offers can be combined, except where explicitly noted. Our system will automatically apply the best possible combination for you.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">How does the AI recommendation system work?</div>
+                <div class="faq-answer">
+                    Our AI analyzes your purchase history, browsing behavior, and style preferences to suggest items that complement your wardrobe.
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: Design Features -->
+        <section class="section">
+            <h2 class="section-title"><i class="fas fa-palette"></i> Design Features</h2>
+            <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+                <li>Sleek modern card-based layout</li>
+                <li>Hover-based animations for interactive experience</li>
+                <li>Intuitive icons for each offer type</li>
+                <li>Collapsible FAQs for detailed information</li>
+                <li>Real-time eligibility checks on "Claim Offer" buttons</li>
+                <li>Performance-optimized with caching</li>
+                <li>Fully responsive design</li>
+            </ul>
+            
+            <div class="collapsible">Technical Details</div>
+            <div class="content">
+                <p><strong>Caching Implementation:</strong> This page utilizes browser caching strategies for optimal performance. Static assets are cached for 1 week, with versioned filenames to ensure updates are properly propagated.</p>
+                <p><strong>AI Integration:</strong> Our backend uses machine learning models to personalize offers in real-time based on user behavior and purchase history.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Check if page is loaded from cache
+        window.addEventListener('load', function() {
+            if (window.performance) {
+                const navEntries = performance.getEntriesByType("navigation");
+                if (navEntries.length > 0 && navEntries[0].type === 'back_forward') {
+                    console.log('Page loaded from cache');
+                    // You could show a subtle indicator that cached version is being shown
+                }
+            }
+        });
+
+        // Collapsible functionality
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.toggle('active');
+                const content = button.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        });
+        
+        // Form submission
+        document.getElementById('dryCleaningForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Store form data in localStorage
+            const formData = {
+                name: document.getElementById('name').value,
+                address: document.getElementById('address').value,
+                itemCategory: document.getElementById('itemCategory').value,
+                pickupDate: document.getElementById('pickupDate').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('dryCleaningFormData', JSON.stringify(formData));
+            
+            alert('Dry cleaning request received! Our AI will verify your eligibility and contact you shortly.');
+            
+            // In production: Add actual form submission logic here
+        });
+        
+        // Pre-fill form if cached data exists
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedFormData = localStorage.getItem('dryCleaningFormData');
+            if (savedFormData) {
+                const formData = JSON.parse(savedFormData);
+                document.getElementById('name').value = formData.name || '';
+                document.getElementById('address').value = formData.address || '';
+                document.getElementById('itemCategory').value = formData.itemCategory || '';
+                document.getElementById('pickupDate').value = formData.pickupDate || '';
+            }
+        });
+        
+        // Claim offer buttons
+        document.querySelectorAll('.offer-card .btn, .feature-card .btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const card = button.closest('.offer-card, .feature-card');
+                const offerTitle = card.querySelector('h3').textContent;
+                
+                // Store offer in localStorage
+                const offersClaimed = JSON.parse(localStorage.getItem('claimedOffers') || '[]');
+                offersClaimed.push({
+                    title: offerTitle,
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('claimedOffers', JSON.stringify(offersClaimed));
+                
+                alert(`You've claimed the "${offerTitle}" offer! Check your email for confirmation.`);
+            });
+        });
+        
+        // Service Worker Registration for caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful');
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
